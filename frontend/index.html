@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Accounting Genie Setup</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        label { display: block; margin-bottom: 0.5em; }
+        input { width: 300px; }
+    </style>
+    <script>
+        async function loadConfig() {
+            const res = await fetch('/api/config');
+            if (res.ok) {
+                const cfg = await res.json();
+                document.getElementById('clientId').value = cfg.fikenClientId || '';
+                document.getElementById('clientSecret').value = cfg.fikenClientSecret || '';
+                document.getElementById('openaiKey').value = cfg.openaiKey || '';
+            }
+        }
+        async function saveConfig() {
+            const cfg = {
+                fikenClientId: document.getElementById('clientId').value,
+                fikenClientSecret: document.getElementById('clientSecret').value,
+                openaiKey: document.getElementById('openaiKey').value
+            };
+            await fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cfg)
+            });
+            alert('Configuration saved');
+        }
+        async function showRedirectUrl() {
+            const res = await fetch('/api/redirect-url');
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('redirectUrl').textContent = data.redirectUrl;
+            }
+        }
+        window.onload = function() {
+            loadConfig();
+            showRedirectUrl();
+        };
+    </script>
+</head>
+<body>
+    <h1>Accounting Genie Setup</h1>
+    <label>Fiken Client ID<br><input id="clientId"></label>
+    <label>Fiken Client Secret<br><input id="clientSecret"></label>
+    <label>OpenAI API Key<br><input id="openaiKey"></label>
+    <button onclick="saveConfig()">Save Configuration</button>
+    <p>Redirect URL for Fiken OAuth: <span id="redirectUrl"></span></p>
+</body>
+</html>
