@@ -38,6 +38,18 @@
                 document.getElementById('redirectUrl').textContent = data.redirectUrl;
             }
         }
+        async function uploadInvoice() {
+            const file = document.getElementById('invoiceFile').files[0];
+            if (!file) {
+                alert('Select a file first');
+                return;
+            }
+            const form = new FormData();
+            form.append('file', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: form });
+            const data = await res.json();
+            document.getElementById('uploadResult').textContent = JSON.stringify(data, null, 2);
+        }
         window.onload = function() {
             loadConfig();
             showRedirectUrl();
@@ -51,5 +63,9 @@
     <label>OpenAI API Key<br><input id="openaiKey"></label>
     <button onclick="saveConfig()">Save Configuration</button>
     <p>Redirect URL for Fiken OAuth: <span id="redirectUrl"></span></p>
+    <hr>
+    <label>Invoice File<br><input type="file" id="invoiceFile"></label>
+    <button onclick="uploadInvoice()">Upload Invoice</button>
+    <pre id="uploadResult"></pre>
 </body>
 </html>
